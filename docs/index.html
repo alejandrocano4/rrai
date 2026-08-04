@@ -6,103 +6,204 @@
 <title>RRAI — CH Capital</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
+:root{
+  --navy:#0f1b2d;--navy-mid:#172435;--navy-light:#1e3048;
+  --gold:#c8a96e;--gold-light:#e8c98a;
+  --cream:#f5f0e8;--cream-light:#faf8f4;
+  --text-muted:#6b7a8d;--text-light:#9aa5b4;
+  --border:rgba(200,169,110,0.12);
+  --bloomberg:#f5821f;
+  --green:#1a9e6e;--red:#d94f3d;--amber:#c8852a;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh;padding:24px 20px}
-.container{max-width:900px;margin:0 auto}
-.header{margin-bottom:24px}
-.title{font-size:22px;font-weight:600;color:#f1f5f9}
-.subtitle{font-size:12px;color:#64748b;margin-top:4px}
-.update-time{font-size:11px;color:#475569;margin-top:4px}
-.score-section{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center;background:#1e2330;border-radius:12px;padding:20px 24px;margin-bottom:16px;border:1px solid #2d3748}
-.score-number{font-size:72px;font-weight:700;line-height:1}
-.score-estado{font-size:18px;font-weight:600;margin-bottom:4px}
-.score-desc{font-size:13px;color:#94a3b8;margin-bottom:12px;line-height:1.5}
-.score-accion{display:inline-block;padding:5px 14px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--navy);color:var(--cream-light);min-height:100vh;padding:28px 20px}
+.container{max-width:960px;margin:0 auto}
+.header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;padding-bottom:20px;border-bottom:1px solid rgba(200,169,110,0.2)}
+.brand{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.title{font-size:20px;font-weight:600;color:var(--cream-light);letter-spacing:-.01em}
+.subtitle{font-size:12px;color:var(--text-light);margin-top:3px}
+.update-badge{display:flex;align-items:center;gap:6px;padding:5px 12px;background:var(--navy-light);border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--text-light)}
+.update-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.score-card{background:var(--navy-mid);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:16px;display:grid;grid-template-columns:auto 1px 1fr;gap:24px;align-items:center}
+.score-num-wrap{text-align:center}
+.score-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);margin-bottom:4px}
+.score-number{font-size:80px;font-weight:700;line-height:1;color:var(--bloomberg);font-variant-numeric:tabular-nums}
+.score-of-100{font-size:22px;color:var(--text-light);font-weight:400}
+.score-divider{background:rgba(200,169,110,0.15);height:80px;width:1px}
+.score-estado{font-size:20px;font-weight:600;margin-bottom:6px;color:var(--cream-light)}
+.score-desc{font-size:13px;color:var(--text-light);line-height:1.55;margin-bottom:14px;max-width:480px}
+.score-accion{display:inline-flex;align-items:center;padding:6px 16px;border-radius:6px;font-size:12px;font-weight:600;letter-spacing:.04em;border:1px solid}
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
-.metric{background:#1e2330;border-radius:10px;padding:12px 14px;border:1px solid #2d3748}
-.metric-label{font-size:11px;color:#64748b;margin-bottom:4px}
-.metric-value{font-size:20px;font-weight:600;color:#f1f5f9}
-.metric-sub{font-size:10px;color:#475569;margin-top:2px}
-.chart-section{background:#1e2330;border-radius:12px;padding:20px;margin-bottom:16px;border:1px solid #2d3748}
-.chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
-.chart-title{font-size:13px;font-weight:500;color:#cbd5e1}
-.range-btns{display:flex;gap:4px}
-.range-btn{padding:4px 10px;font-size:11px;border:1px solid #334155;border-radius:6px;cursor:pointer;background:none;color:#64748b;transition:all .15s}
-.range-btn.active,.range-btn:hover{background:#334155;color:#e2e8f0;border-color:#475569}
-.chart-wrap{height:320px;position:relative}
-.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px}
-.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#64748b}
-.legend-line{width:16px;height:2px;border-radius:1px}
-.zones{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px}
-.zone{border-radius:8px;padding:10px 12px;border:1px solid}
-.zone-range{font-size:11px;font-weight:700;margin-bottom:3px}
-.zone-name{font-size:11px;font-weight:600;margin-bottom:2px}
-.zone-desc{font-size:10px;color:#94a3b8;line-height:1.3}
-.footer{text-align:center;font-size:10px;color:#334155;margin-top:16px;line-height:1.6}
-.footer a{color:#475569;text-decoration:none}
-@media(max-width:600px){.metrics{grid-template-columns:repeat(2,1fr)}.zones{grid-template-columns:repeat(2,1fr)}.score-number{font-size:56px}}
+.metric{background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.metric-label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);margin-bottom:6px}
+.metric-value{font-size:22px;font-weight:600;color:var(--cream-light);font-variant-numeric:tabular-nums}
+.metric-sub{font-size:10px;color:var(--text-muted);margin-top:3px}
+.chart-card{background:var(--navy-mid);border:1px solid var(--border);border-radius:12px;padding:22px 24px;margin-bottom:16px}
+.chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.chart-title{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+.range-btns{display:flex;gap:3px}
+.range-btn{padding:5px 12px;font-size:11px;font-weight:500;border:1px solid rgba(200,169,110,0.15);border-radius:5px;cursor:pointer;background:none;color:var(--text-light);transition:all .15s}
+.range-btn:hover{border-color:rgba(200,169,110,0.4);color:var(--cream-light)}
+.range-btn.active{background:rgba(200,169,110,0.12);border-color:var(--gold);color:var(--gold)}
+.chart-wrap{height:300px;position:relative}
+.legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid rgba(200,169,110,0.08)}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text-light)}
+.leg-line{width:20px;height:2px;border-radius:1px}
+.leg-dash{width:20px;height:0;border-top:2px dashed}
+.zones{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:20px}
+.zone{background:var(--navy-mid);border-radius:8px;padding:12px 14px;border:1px solid var(--border);border-top:2px solid}
+.zone.active-zone{background:var(--navy-light)}
+.zone-range{font-size:13px;font-weight:700;margin-bottom:3px;font-variant-numeric:tabular-nums}
+.zone-name{font-size:11px;font-weight:600;margin-bottom:4px}
+.zone-desc{font-size:10px;color:var(--text-light);line-height:1.4}
+.footer{text-align:center;font-size:10px;color:var(--text-muted);line-height:1.7;padding-top:16px;border-top:1px solid rgba(200,169,110,0.1)}
+.footer a{color:var(--gold);text-decoration:none}
+@media(max-width:700px){
+  .score-card{grid-template-columns:1fr;gap:16px}
+  .score-divider{display:none}
+  .score-number{font-size:64px}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .zones{grid-template-columns:repeat(2,1fr)}
+}
 </style>
 </head>
 <body>
 <div class="container">
+
 <div class="header">
-  <div class="title">RRAI — Reflexivity Risk Accumulation Index</div>
-  <div class="subtitle">Indicador de riesgo reflexivo global · CH Capital · chcapital.es</div>
-  <div class="update-time" id="update-time">Cargando...</div>
-</div>
-<div class="score-section" id="score-section">
-  <div class="score-number" id="score-number">—</div>
   <div>
-    <div class="score-estado" id="score-estado">Cargando datos...</div>
+    <div class="brand">CH Capital · chcapital.es</div>
+    <div class="title">RRAI — Reflexivity Risk Accumulation Index</div>
+    <div class="subtitle">Indicador cuantitativo de riesgo reflexivo global · 34 activos · 10 países</div>
+  </div>
+  <div class="update-badge">
+    <div class="update-dot"></div>
+    <span id="update-time">Cargando...</span>
+  </div>
+</div>
+
+<div class="score-card" id="score-card">
+  <div class="score-num-wrap">
+    <div class="score-label">RRAI Actual</div>
+    <div>
+      <span class="score-number" id="score-number">—</span>
+      <span class="score-of-100">/100</span>
+    </div>
+  </div>
+  <div class="score-divider"></div>
+  <div>
+    <div class="score-estado" id="score-estado">Cargando...</div>
     <div class="score-desc" id="score-desc"></div>
     <div class="score-accion" id="score-accion"></div>
   </div>
 </div>
+
 <div class="metrics">
-  <div class="metric"><div class="metric-label">M1 · Acumulación</div><div class="metric-value" id="m1-val">—</div><div class="metric-sub">Sesgo formándose</div></div>
-  <div class="metric"><div class="metric-label">M2 · Inflexión</div><div class="metric-value" id="m2-val">—</div><div class="metric-sub">Covarianza + Varianza</div></div>
-  <div class="metric"><div class="metric-label">PPCP actual</div><div class="metric-value" id="ppcp-val">—</div><div class="metric-sub">Pares correlación +</div></div>
-  <div class="metric"><div class="metric-label">Varianza global</div><div class="metric-value" id="var-val">—</div><div class="metric-sub">Volatilidad anualizada</div></div>
+  <div class="metric">
+    <div class="metric-label">M1 · Acumulación</div>
+    <div class="metric-value" id="m1-val">—</div>
+    <div class="metric-sub">Sesgo formándose</div>
+  </div>
+  <div class="metric">
+    <div class="metric-label">M2 · Inflexión</div>
+    <div class="metric-value" id="m2-val">—</div>
+    <div class="metric-sub">Covarianza + Varianza</div>
+  </div>
+  <div class="metric">
+    <div class="metric-label">PPCP</div>
+    <div class="metric-value" id="ppcp-val">—</div>
+    <div class="metric-sub">Pares covarianza positiva</div>
+  </div>
+  <div class="metric">
+    <div class="metric-label">Varianza global</div>
+    <div class="metric-value" id="var-val">—</div>
+    <div class="metric-sub">Volatilidad anualizada</div>
+  </div>
 </div>
-<div class="chart-section">
+
+<div class="chart-card">
   <div class="chart-header">
-    <div class="chart-title">Serie histórica 1991–hoy</div>
+    <div class="chart-title">Serie histórica 1991 – hoy</div>
     <div class="range-btns">
       <button class="range-btn" onclick="setRange('all',this)">Todo</button>
-      <button class="range-btn" onclick="setRange(5,this)">5 años</button>
-      <button class="range-btn active" onclick="setRange(3,this)">3 años</button>
-      <button class="range-btn" onclick="setRange(1,this)">1 año</button>
+      <button class="range-btn" onclick="setRange(10,this)">10a</button>
+      <button class="range-btn" onclick="setRange(5,this)">5a</button>
+      <button class="range-btn active" onclick="setRange(3,this)">3a</button>
+      <button class="range-btn" onclick="setRange(1,this)">1a</button>
     </div>
   </div>
-  <div class="chart-wrap"><canvas id="rrai-chart"></canvas></div>
+  <div class="chart-wrap">
+    <canvas id="rrai-chart"></canvas>
+  </div>
   <div class="legend">
-    <div class="legend-item"><div class="legend-line" style="background:#378ADD;height:2.5px"></div>RRAI</div>
-    <div class="legend-item"><div class="legend-line" style="background:#1D9E75;border-top:1.5px dashed #1D9E75"></div>M1</div>
-    <div class="legend-item"><div class="legend-line" style="background:#D85A30;border-top:1.5px dashed #D85A30"></div>M2</div>
-    <div class="legend-item"><div class="legend-line" style="background:#9B59B6"></div>Media</div>
+    <div class="legend-item">
+      <div class="leg-line" style="background:#f5821f;height:2.5px"></div>RRAI
+    </div>
+    <div class="legend-item">
+      <div class="leg-dash" style="border-color:#1a9e6e"></div>M1 acumulación
+    </div>
+    <div class="legend-item">
+      <div class="leg-dash" style="border-color:#c8852a"></div>M2 inflexión
+    </div>
+    <div class="legend-item">
+      <div class="leg-dash" style="border-color:rgba(200,169,110,0.6)"></div>Media histórica
+    </div>
   </div>
 </div>
+
 <div class="zones">
-  <div class="zone" style="background:rgba(29,158,117,0.08);border-color:rgba(29,158,117,0.25)"><div class="zone-range" style="color:#1D9E75">0–25</div><div class="zone-name" style="color:#1D9E75">Divergencia</div><div class="zone-desc">Proceso acumulándose en silencio</div></div>
-  <div class="zone" style="background:rgba(99,153,34,0.08);border-color:rgba(99,153,34,0.25)"><div class="zone-range" style="color:#639922">25–50</div><div class="zone-name" style="color:#639922">Normal</div><div class="zone-desc">Sin señales de sesgo reflexivo</div></div>
-  <div class="zone" style="background:rgba(186,117,23,0.08);border-color:rgba(186,117,23,0.25)"><div class="zone-range" style="color:#BA7517">50–75</div><div class="zone-name" style="color:#BA7517">Tensión</div><div class="zone-desc">Señales de acumulación detectadas</div></div>
-  <div class="zone" style="background:rgba(216,90,48,0.08);border-color:rgba(216,90,48,0.25)"><div class="zone-range" style="color:#D85A30">75–90</div><div class="zone-name" style="color:#D85A30">Alerta</div><div class="zone-desc">Sistema frágil. Reducir exposición</div></div>
-  <div class="zone" style="background:rgba(226,75,74,0.08);border-color:rgba(226,75,74,0.25)"><div class="zone-range" style="color:#E24B4A">90–100</div><div class="zone-name" style="color:#E24B4A">Inflexión</div><div class="zone-desc">Posición defensiva inmediata</div></div>
+  <div class="zone" id="zone-0" style="border-top-color:#1a9e6e">
+    <div class="zone-range" style="color:#1a9e6e">0 – 25</div>
+    <div class="zone-name" style="color:#1a9e6e">Divergencia</div>
+    <div class="zone-desc">Proceso reflexivo acumulándose en silencio</div>
+  </div>
+  <div class="zone" id="zone-25" style="border-top-color:#4a8c5c">
+    <div class="zone-range" style="color:#4a8c5c">25 – 50</div>
+    <div class="zone-name" style="color:#4a8c5c">Normal</div>
+    <div class="zone-desc">Sin señales de sesgo. Diversificación activa</div>
+  </div>
+  <div class="zone" id="zone-50" style="border-top-color:#c8852a">
+    <div class="zone-range" style="color:#c8852a">50 – 75</div>
+    <div class="zone-name" style="color:#c8852a">Tensión</div>
+    <div class="zone-desc">Señales de acumulación. Vigilancia activa</div>
+  </div>
+  <div class="zone" id="zone-75" style="border-top-color:#d94f3d">
+    <div class="zone-range" style="color:#d94f3d">75 – 90</div>
+    <div class="zone-name" style="color:#d94f3d">Alerta</div>
+    <div class="zone-desc">Sistema frágil. Reducir exposición</div>
+  </div>
+  <div class="zone" id="zone-90" style="border-top-color:#a83228">
+    <div class="zone-range" style="color:#a83228">90 – 100</div>
+    <div class="zone-name" style="color:#a83228">Inflexión</div>
+    <div class="zone-desc">Posición defensiva inmediata</div>
+  </div>
 </div>
+
 <div class="footer">
-  RRAI v1.0 · Reflexivity Risk Accumulation Index · CH Capital<br>
-  34 activos · 10 países · Actualización diaria automática<br>
-  <a href="https://chcapital.es">chcapital.es</a> · Indicador informativo, no constituye asesoramiento de inversión
+  RRAI v1.0 · Reflexivity Risk Accumulation Index · Basado en la Teoría de la Reflexividad de George Soros<br>
+  34 activos nativos · 10 países desarrollados · Proxy MSCI World · Actualización diaria automática<br>
+  <a href="https://chcapital.es">CH Capital · chcapital.es</a> ·
+  Este indicador es de carácter informativo y no constituye asesoramiento de inversión
 </div>
+
 </div>
 <script>
 let allData=[],chart=null,currentRange=3;
+const BLOOMBERG='#f5821f';
 const DESC={
-  "Divergencia sectorial":"El proceso reflexivo se acumula en un sector. La diversificación aún funciona.",
-  "Comportamiento normal":"El mercado opera dentro de parámetros históricos normales.",
-  "Tensión creciente":"Señales de acumulación detectadas. Covarianza subiendo sobre su media histórica.",
-  "Alerta alta":"Sistema frágil. Proceso reflexivo maduro. Considerar reducir exposición.",
-  "Inflexión inminente":"Ambos módulos en zona crítica. Posición defensiva recomendada."
+  "Divergencia sectorial":"El proceso reflexivo se acumula en un sector específico mientras el resto del mercado diverge. La diversificación aún funciona pero el sesgo empieza a formarse.",
+  "Comportamiento normal":"El mercado opera dentro de sus parámetros históricos normales. No se detectan señales de sesgo reflexivo ni de estrés sistémico.",
+  "Tensión creciente":"Señales de acumulación reflexiva detectadas. La covarianza está por encima de su media histórica. Vigilancia activa recomendada.",
+  "Alerta alta":"Sistema en estado de fragilidad elevada. El proceso reflexivo está maduro. Considerar reducir exposición a activos de riesgo.",
+  "Inflexión inminente":"Ambos módulos en zona crítica. Covarianza y varianza en niveles históricos de crisis. Posición defensiva recomendada."
+};
+const ZONAS={
+  "Divergencia sectorial":{color:'#1a9e6e',bg:'rgba(26,158,110,0.08)'},
+  "Comportamiento normal":{color:'#4a8c5c',bg:'rgba(74,140,92,0.08)'},
+  "Tensión creciente":{color:'#c8852a',bg:'rgba(200,133,42,0.08)'},
+  "Alerta alta":{color:'#d94f3d',bg:'rgba(217,79,61,0.08)'},
+  "Inflexión inminente":{color:'#a83228',bg:'rgba(168,50,40,0.08)'},
 };
 async function cargarDatos(){
   try{
@@ -111,29 +212,42 @@ async function cargarDatos(){
     allData=j.datos||[];
     if(!allData.length)return;
     const u=allData[allData.length-1];
-    const c=u.color||'#BA7517';
+    const z=ZONAS[u.estado]||ZONAS["Tensión creciente"];
     document.getElementById('score-number').textContent=u.rrai;
-    document.getElementById('score-number').style.color=c;
+    document.getElementById('score-number').style.color=BLOOMBERG;
     document.getElementById('score-estado').textContent=u.estado;
-    document.getElementById('score-estado').style.color=c;
     document.getElementById('score-desc').textContent=DESC[u.estado]||'';
-    const a=document.getElementById('score-accion');
-    a.textContent=u.accion;a.style.color=c;a.style.borderColor=c;a.style.background=c+'18';
+    const ac=document.getElementById('score-accion');
+    ac.textContent='→ '+u.accion;
+    ac.style.color=z.color;ac.style.borderColor=z.color;ac.style.background=z.bg;
     document.getElementById('m1-val').textContent=u.m1;
     document.getElementById('m2-val').textContent=u.m2;
     document.getElementById('ppcp-val').textContent=(u.ppcp||'—')+'%';
     document.getElementById('var-val').textContent=(u.varianza||'—')+'%';
     const f=new Date(u.fecha+'T00:00:00');
-    document.getElementById('update-time').textContent='Actualizado: '+f.toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'numeric'});
-    if(u.convergencia)document.getElementById('score-section').style.boxShadow='0 0 0 1px rgba(95,132,183,0.5)';
+    document.getElementById('update-time').textContent='Actualizado '+f.toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'numeric'});
+    resaltarZona(u.rrai);
+    if(u.convergencia)document.getElementById('score-card').style.boxShadow='0 0 0 1px rgba(200,169,110,0.4)';
     buildChart(currentRange);
-  }catch(e){console.error(e);document.getElementById('score-estado').textContent='Error cargando datos';}
+  }catch(e){
+    console.error(e);
+    document.getElementById('score-estado').textContent='Error al cargar datos';
+  }
 }
-function getColor(v){if(v<25)return'#1D9E75';if(v<50)return'#639922';if(v<75)return'#BA7517';if(v<90)return'#D85A30';return'#E24B4A';}
-function buildChart(r){
-  currentRange=r;
+function resaltarZona(v){
+  ['zone-0','zone-25','zone-50','zone-75','zone-90'].forEach(id=>document.getElementById(id)?.classList.remove('active-zone'));
+  let id='zone-0';
+  if(v>=90)id='zone-90';else if(v>=75)id='zone-75';else if(v>=50)id='zone-50';else if(v>=25)id='zone-25';
+  document.getElementById(id)?.classList.add('active-zone');
+}
+function buildChart(rangeYears){
+  currentRange=rangeYears;
   let d=allData;
-  if(r!=='all'){const c=new Date();c.setFullYear(c.getFullYear()-r);const cs=c.toISOString().split('T')[0];d=allData.filter(x=>x.fecha>=cs);}
+  if(rangeYears!=='all'){
+    const c=new Date();c.setFullYear(c.getFullYear()-rangeYears);
+    const cs=c.toISOString().split('T')[0];
+    d=allData.filter(x=>x.fecha>=cs);
+  }
   if(!d.length)return;
   const labels=d.map(x=>x.fecha.substring(0,7));
   const rrai=d.map(x=>x.rrai);
@@ -144,16 +258,16 @@ function buildChart(r){
   chart=new Chart(document.getElementById('rrai-chart'),{
     type:'line',
     data:{labels,datasets:[
-      {label:'z90',data:rrai.map(v=>v>=90?100:null),fill:true,backgroundColor:'rgba(226,75,74,0.08)',borderWidth:0,pointRadius:0,tension:0.3},
-      {label:'z75',data:rrai.map(v=>v>=75&&v<90?90:null),fill:true,backgroundColor:'rgba(216,90,48,0.06)',borderWidth:0,pointRadius:0,tension:0.3},
-      {label:'l90',data:rrai.map(()=>90),borderColor:'rgba(226,75,74,0.2)',borderWidth:1,borderDash:[3,3],pointRadius:0,fill:false},
-      {label:'l75',data:rrai.map(()=>75),borderColor:'rgba(216,90,48,0.2)',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
-      {label:'l50',data:rrai.map(()=>50),borderColor:'rgba(100,116,139,0.15)',borderWidth:1,borderDash:[2,4],pointRadius:0,fill:false},
-      {label:'l25',data:rrai.map(()=>25),borderColor:'rgba(29,158,117,0.15)',borderWidth:1,borderDash:[2,4],pointRadius:0,fill:false},
-      {label:'Media',data:rrai.map(()=>avg),borderColor:'rgba(155,89,182,0.5)',borderWidth:1.5,borderDash:[6,3],pointRadius:0,fill:false},
-      {label:'M1',data:m1,borderColor:'#1D9E75',borderWidth:1.2,borderDash:[5,3],pointRadius:0,fill:false,tension:0.4},
-      {label:'M2',data:m2,borderColor:'#D85A30',borderWidth:1.2,borderDash:[2,3],pointRadius:0,fill:false,tension:0.4},
-      {label:'RRAI',data:rrai,borderColor:'#378ADD',borderWidth:2.5,pointRadius:0,pointHoverRadius:5,fill:false,tension:0.4},
+      {label:'z90',data:rrai.map(v=>v>=90?100:null),fill:true,backgroundColor:'rgba(168,50,40,0.07)',borderWidth:0,pointRadius:0,tension:0.3},
+      {label:'z75',data:rrai.map(v=>v>=75&&v<90?90:null),fill:true,backgroundColor:'rgba(217,79,61,0.05)',borderWidth:0,pointRadius:0,tension:0.3},
+      {label:'l90',data:rrai.map(()=>90),borderColor:'rgba(168,50,40,0.25)',borderWidth:1,borderDash:[3,3],pointRadius:0,fill:false},
+      {label:'l75',data:rrai.map(()=>75),borderColor:'rgba(217,79,61,0.2)',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
+      {label:'l50',data:rrai.map(()=>50),borderColor:'rgba(200,169,110,0.1)',borderWidth:1,borderDash:[2,4],pointRadius:0,fill:false},
+      {label:'l25',data:rrai.map(()=>25),borderColor:'rgba(26,158,110,0.12)',borderWidth:1,borderDash:[2,4],pointRadius:0,fill:false},
+      {label:'Media',data:rrai.map(()=>avg),borderColor:'rgba(200,169,110,0.5)',borderWidth:1.5,borderDash:[6,4],pointRadius:0,fill:false},
+      {label:'M1',data:m1,borderColor:'#1a9e6e',borderWidth:1.2,borderDash:[5,3],pointRadius:0,fill:false,tension:0.4},
+      {label:'M2',data:m2,borderColor:'#c8852a',borderWidth:1.2,borderDash:[2,3],pointRadius:0,fill:false,tension:0.4},
+      {label:'RRAI',data:rrai,borderColor:BLOOMBERG,borderWidth:2.5,pointRadius:0,pointHoverRadius:5,pointHoverBackgroundColor:BLOOMBERG,fill:false,tension:0.4},
     ]},
     options:{
       responsive:true,maintainAspectRatio:false,
@@ -161,22 +275,26 @@ function buildChart(r){
       plugins:{
         legend:{display:false},
         tooltip:{
-          backgroundColor:'#1e2330',borderColor:'#334155',borderWidth:1,titleColor:'#94a3b8',bodyColor:'#e2e8f0',
+          backgroundColor:'#172435',borderColor:'rgba(200,169,110,0.2)',borderWidth:1,
+          titleColor:'#9aa5b4',bodyColor:'#f5f0e8',padding:10,
           callbacks:{
             title:c=>c[0].label,
-            label:c=>{const m={6:'Media',7:'M1',8:'M2',9:'RRAI'};if(!m[c.datasetIndex])return null;return m[c.datasetIndex]+': '+Math.round(c.raw);}
+            label:c=>{const m={6:'Media',7:'M1',8:'M2',9:'RRAI'};if(!m[c.datasetIndex])return null;return' '+m[c.datasetIndex]+': '+Math.round(c.raw);}
           },
           filter:i=>i.datasetIndex>=6
         }
       },
       scales:{
-        x:{ticks:{font:{size:10},color:'#475569',maxTicksLimit:12,autoSkip:true},grid:{color:'rgba(51,65,85,0.4)'}},
-        y:{min:0,max:100,ticks:{font:{size:10},color:'#475569',callback:v=>[0,25,50,75,90,100].includes(v)?v:null},grid:{color:'rgba(51,65,85,0.4)'}}
+        x:{ticks:{font:{size:10},color:'#6b7a8d',maxTicksLimit:12,autoSkip:true},grid:{color:'rgba(200,169,110,0.04)'}},
+        y:{min:0,max:100,ticks:{font:{size:10},color:'#6b7a8d',callback:v=>[0,25,50,75,90,100].includes(v)?v:null},grid:{color:'rgba(200,169,110,0.04)'}}
       }
     }
   });
 }
-function setRange(r,el){document.querySelectorAll('.range-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');buildChart(r);}
+function setRange(r,el){
+  document.querySelectorAll('.range-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');buildChart(r);
+}
 cargarDatos();
 </script>
 </body>
