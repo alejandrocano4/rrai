@@ -909,6 +909,20 @@
       "estado": "Tensión creciente",
       "accion": "Vigilancia activa",
       "color": "#BA7517"
+    },
+    {
+      "fecha": "2026-09-10",
+      "rrai": 70,
+      "m1": 70,
+      "m2": 25,
+      "ppcp": 56.6,
+      "varianza": 27.9,
+      "vix": 19.0,
+      "cape": 37.8,
+      "convergencia": false,
+      "estado": "Tensión creciente",
+      "accion": "Vigilancia activa",
+      "color": "#BA7517"
     }
   ],
   "parametros": {
@@ -919,6 +933,6 @@
     "gamma": 0.15,
     "umbral": 60,
     "activos": 33,
-    "ultima_actualizacion": "2026-09-09"
+    "ultima_actualizacion": "2026-09-10"
   }
 }
